@@ -5,11 +5,22 @@ pipeline{
         stage('Build') {
             steps {
                 echo 'Building...'
+                sh 'docker build -t ahedfinal .'   
+
             }
         }
-        stage('Test') {
+        stage('login docker hub') {
             steps {
-                echo 'Testing...'
+                echo 'logging in...'
+                withCredentials([usernamePassword(credentials   Id: 'dockerhub', passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                    sh 'echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin'
+            }
+        }
+        stage('docker push') {
+            steps {
+                echo 'pushing image...'
+                sh 'docker push ahed2604/final:latest'
+
             }
         }
         stage('Deploy') {
